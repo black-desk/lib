@@ -3,8 +3,8 @@ name: Build and test cpp library
 on:
   push:
     paths:
-      - '.github/workflows/**'
-      - 'cpp/**'
+      - .github/workflows/*
+      - cpp/**
 
 jobs:
   build:
