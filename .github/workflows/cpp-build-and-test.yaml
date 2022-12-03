@@ -1,0 +1,46 @@
+name: Build and test cpp library
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'cpp/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Lint cmake-format
+      run: |
+        sudo apt install -y pip &&
+        pip install --user cmake-format &&
+        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --config-files cpp/.cmake-format.py --check "$@" {} +
+
+    - name: Lint clang-format
+      uses: DoozyX/clang-format-lint-action@v0.14
+      with:
+        source: cpp
+        exclude: cpp/third_party
+        clangFormatVersion: 14
+
+    - name: Build "Debug" and test using g++
+      run: |
+        cd cpp &&
+        rm build -rf &&
+        cmake -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" -DCMAKE_BUILD_TYPE=Debug &&
+        cmake --build build -j 16 &&
+        cmake --build build -t test
+
+    - name: Install clang
+      run: sudo apt-get install -y clang
+
+    - name: Build "Debug" and test using clang++
+      run: |
+        cd cpp &&
+        rm build -rf &&
+        env CXX=clang++ cmake -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" -DCMAKE_BUILD_TYPE=Debug &&
+        cmake --build build -j 16 &&
+        cmake --build build -t test
