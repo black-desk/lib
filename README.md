@@ -1,6 +1,6 @@
 # lib
 
-Code library for black\_desk.
+Code library for me.
 
 # branches
 
