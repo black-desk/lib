@@ -1,0 +1,14 @@
+#pragma once
+
+#include <string>
+
+namespace black_desk::cpplib
+{
+
+static const std::string __VERSION = "@CMAKE_PROJECT_VERSION@"
+#ifdef BLACKDESK_CPPLIB_DEBUG
+                                   "|@GIT@"
+#endif
+        ;
+
+}
