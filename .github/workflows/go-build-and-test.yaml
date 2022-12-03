@@ -3,7 +3,7 @@ name: Build and test go package
 on:
   push:
     paths:
-      - .github/**
+      - .github/workflows/*
       - go/**
 
 jobs:
