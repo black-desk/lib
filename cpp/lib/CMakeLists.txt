@@ -9,7 +9,8 @@ execute_process(
 
 configure_file(version.hpp.in version.hpp)
 
-add_library(blackdesk_cpplib_core common.cpp)
+add_library(blackdesk_cpplib_core common.cpp logger.cpp)
 add_library(blackdesk_cpplib_linux Linux/fd.cpp)
 
-target_link_libraries(blackdesk_cpplib_linux fmt::fmt)
+target_link_libraries(blackdesk_cpplib_core spdlog::spdlog)
+target_link_libraries(blackdesk_cpplib_linux fmt::fmt blackdesk_cpplib_core)
