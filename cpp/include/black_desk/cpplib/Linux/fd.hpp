@@ -8,9 +8,9 @@ class FileDescriptorHolder {
         virtual ~FileDescriptorHolder() noexcept;
         FileDescriptorHolder(const FileDescriptorHolder &that) = delete;
         FileDescriptorHolder(FileDescriptorHolder &&that);
+        int fd = 0;
 
     private:
-        int fd = 0;
         explicit FileDescriptorHolder(int fd) noexcept;
 };
 }

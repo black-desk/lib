@@ -34,6 +34,14 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+  GITHUB_REPOSITORY google/googletest
+  NAME GTest
+  VERSION 1.12.1
+  GIT_TAG release-1.12.1
+  GIT_SHALLOW ON
+)
+
+CPMAddPackage(
   GITHUB_REPOSITORY gabime/spdlog
   VERSION 1.11.0
   OPTIONS "SPDLOG_FMT_EXTERNAL 1"
@@ -54,3 +62,4 @@ include_directories(BEFORE include)
 
 add_subdirectory(include)
 add_subdirectory(lib)
+add_subdirectory(tests)
