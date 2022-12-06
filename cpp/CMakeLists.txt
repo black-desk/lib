@@ -6,26 +6,30 @@ project(
   LANGUAGES CXX
 )
 
+if(NOT DEFINED CPM_USE_LOCAL_PACKAGES)
+  set(CPM_USE_LOCAL_PACKAGES ON)
+endif()
+
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
-  NAME nlohmann_json
-  GIT_TAG master
   GITHUB_REPOSITORY nlohmann/json
+  NAME nlohmann_json
+  VERSION 3.11.2
   GIT_SHALLOW ON
 )
 
 CPMAddPackage(
-  NAME fmt
-  GIT_TAG master
   GITHUB_REPOSITORY fmtlib/fmt
+  GIT_TAG 9.1.0
   GIT_SHALLOW ON
 )
 
 CPMAddPackage(
+  GITHUB_REPOSITORY docopt/docopt.cpp
   NAME docopt
   GIT_TAG master
-  GITHUB_REPOSITORY docopt/docopt.cpp
+  VERSION 0.6.2
   GIT_SHALLOW ON
 )
 
