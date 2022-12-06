@@ -6,28 +6,49 @@ project(
   LANGUAGES CXX
 )
 
+if(NOT DEFINED CPM_USE_LOCAL_PACKAGES)
+  set(CPM_USE_LOCAL_PACKAGES ON)
+endif()
+
 include(cmake/CPM.cmake)
 
 CPMAddPackage(
-  NAME nlohmann_json
-  GIT_TAG master
   GITHUB_REPOSITORY nlohmann/json
+  NAME nlohmann_json
+  VERSION 3.11.2
   GIT_SHALLOW ON
 )
 
 CPMAddPackage(
-  NAME fmt
-  GIT_TAG master
   GITHUB_REPOSITORY fmtlib/fmt
+  GIT_TAG 9.1.0
   GIT_SHALLOW ON
 )
 
 CPMAddPackage(
+  GITHUB_REPOSITORY docopt/docopt.cpp
   NAME docopt
   GIT_TAG master
-  GITHUB_REPOSITORY docopt/docopt.cpp
+  VERSION 0.6.2
   GIT_SHALLOW ON
 )
+
+CPMAddPackage(
+  GITHUB_REPOSITORY google/googletest
+  NAME GTest
+  VERSION 1.12.1
+  GIT_TAG release-1.12.1
+  GIT_SHALLOW ON
+)
+
+CPMAddPackage(
+  GITHUB_REPOSITORY gabime/spdlog
+  VERSION 1.11.0
+  OPTIONS "SPDLOG_FMT_EXTERNAL 1"
+  GIT_SHALLOW ON
+)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSPDLOG_ACTIVE_LEVEL=0")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -41,3 +62,4 @@ include_directories(BEFORE include)
 
 add_subdirectory(include)
 add_subdirectory(lib)
+add_subdirectory(tests)
