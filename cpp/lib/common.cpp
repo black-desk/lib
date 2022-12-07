@@ -5,6 +5,6 @@
 namespace black_desk::cpplib
 {
 
-const std::string VERSION = __VERSION;
+constexpr std::string_view VERSION = internal::VERSION;
 
 }

@@ -2,12 +2,12 @@
 
 #include <string>
 
-namespace black_desk::cpplib
+namespace black_desk::cpplib::internal
 {
 
-static const std::string __VERSION = "@CMAKE_PROJECT_VERSION@"
+static constexpr std::string_view VERSION = "@CMAKE_PROJECT_VERSION@"
 #ifdef BLACKDESK_CPPLIB_DEBUG
-                                   "|@GIT@"
+                                            "|@GIT@"
 #endif
         ;
 

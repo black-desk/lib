@@ -26,6 +26,9 @@ jobs:
         exclude: cpp/third_party
         clangFormatVersion: 14
 
+    - name: Install clang-tidy
+      run: sudo apt-get install -y clang-tidy
+
     - name: Build "Debug" and test using g++
       run: |
         cd cpp &&

@@ -5,6 +5,6 @@
 namespace black_desk::cpplib
 {
 
-extern const std::string VERSION;
+extern const std::string_view VERSION;
 
 }
