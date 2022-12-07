@@ -2,15 +2,25 @@
 
 namespace black_desk::cpplib::Linux
 {
+
 class FileDescriptorHolder {
     public:
-        static FileDescriptorHolder hold(int fd);
+        static auto hold(int file_descriptor) -> FileDescriptorHolder;
+
         virtual ~FileDescriptorHolder() noexcept;
+
         FileDescriptorHolder(const FileDescriptorHolder &that) = delete;
-        FileDescriptorHolder(FileDescriptorHolder &&that);
-        int fd = 0;
+        auto operator=(const FileDescriptorHolder &that)
+                -> FileDescriptorHolder & = delete;
+
+        FileDescriptorHolder(FileDescriptorHolder &&that) noexcept;
+        auto operator=(FileDescriptorHolder &&that) noexcept
+                -> FileDescriptorHolder &;
+
+        int file_descriptor = 0;
 
     private:
-        explicit FileDescriptorHolder(int fd) noexcept;
+        explicit FileDescriptorHolder(int file_descriptor) noexcept;
 };
-}
+
+} // namespace black_desk::cpplib::Linux

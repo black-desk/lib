@@ -8,7 +8,7 @@
 namespace black_desk::cpplib
 {
 
-std::shared_ptr<spdlog::logger> get_logger(const std::string &name)
+auto get_logger(const std::string &name) -> std::shared_ptr<spdlog::logger>
 {
         // Initialize logger
 
@@ -42,7 +42,8 @@ std::shared_ptr<spdlog::logger> get_logger(const std::string &name)
                 });
 
         try {
-                logger->set_level(level_map.at(level ? level : "off"));
+                logger->set_level(
+                        level_map.at(static_cast<bool>(level) ? level : "off"));
         } catch (const std::range_error &e) {
                 logger->set_level(spdlog::level::off);
         }
@@ -50,4 +51,4 @@ std::shared_ptr<spdlog::logger> get_logger(const std::string &name)
         return logger;
 }
 
-}
+} // namespace black_desk::cpplib

@@ -56,6 +56,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBLACKDESK_CPPLIB_DEBUG")
 
+find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRE)
+set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+
 enable_testing()
 
 include_directories(BEFORE include)
