@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13.4..3.25.1)
 
 project(
   blackdesk_cpplib
@@ -6,63 +6,28 @@ project(
   LANGUAGES CXX
 )
 
-if(NOT DEFINED CPM_USE_LOCAL_PACKAGES)
-  set(CPM_USE_LOCAL_PACKAGES ON)
+include(cmake/dependencies.cmake)
+
+if(NOT DEFINED BLACKDESK_CPPLIB_MASTER_PROJECT)
+  if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(BLACKDESK_CPPLIB_MASTER_PROJECT ON)
+  else()
+    set(BLACKDESK_CPPLIB_MASTER_PROJECT OFF)
+  endif()
 endif()
 
-include(cmake/CPM.cmake)
+if(BLACKDESK_CPPLIB_MASTER_PROJECT)
+  if(NOT DEFINED BLACKDESK_CPPLIB_BUILD_TEST)
+    set(BLACKDESK_CPPLIB_BUILD_TEST ON)
+  endif()
+  if(NOT DEFINED CMAKE_CXX_CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+  endif()
+endif()
 
-CPMAddPackage(
-  GITHUB_REPOSITORY nlohmann/json
-  NAME nlohmann_json
-  VERSION 3.11.2
-  GIT_SHALLOW ON
-)
-
-CPMAddPackage(
-  GITHUB_REPOSITORY fmtlib/fmt
-  GIT_TAG 9.1.0
-  GIT_SHALLOW ON
-)
-
-CPMAddPackage(
-  GITHUB_REPOSITORY docopt/docopt.cpp
-  NAME docopt
-  GIT_TAG master
-  VERSION 0.6.2
-  GIT_SHALLOW ON
-)
-
-CPMAddPackage(
-  GITHUB_REPOSITORY google/googletest
-  NAME GTest
-  VERSION 1.12.1
-  GIT_TAG release-1.12.1
-  GIT_SHALLOW ON
-)
-
-CPMAddPackage(
-  GITHUB_REPOSITORY gabime/spdlog
-  VERSION 1.11.0
-  OPTIONS "SPDLOG_FMT_EXTERNAL 1"
-  GIT_SHALLOW ON
-)
-
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DSPDLOG_ACTIVE_LEVEL=0")
-
-set(CMAKE_CXX_STANDARD 17)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBLACKDESK_CPPLIB_DEBUG")
-
-find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRE)
-set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
-
-enable_testing()
-
-include_directories(BEFORE include)
-
-add_subdirectory(include)
 add_subdirectory(lib)
-add_subdirectory(tests)
+
+if(BLACKDESK_CPPLIB_BUILD_TEST)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

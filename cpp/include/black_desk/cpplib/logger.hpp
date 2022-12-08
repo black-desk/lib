@@ -2,12 +2,15 @@
 
 #include <spdlog/spdlog.h>
 
+#ifdef BLACKDESK_CPPLIB_DEBUG
 #include "black_desk/cpplib/common.hpp"
+#endif
 
 namespace black_desk::cpplib
 {
 
-std::shared_ptr<spdlog::logger> get_logger(const std::string &name);
+auto get_logger(const std::string &name) noexcept
+        -> std::shared_ptr<spdlog::logger>;
 
 inline void init_default_logger(const std::string &name)
 {
@@ -17,18 +20,20 @@ inline void init_default_logger(const std::string &name)
 
 #ifdef BLACKDESK_CPPLIB_DEBUG
 
-inline std::shared_ptr<spdlog::logger> verbose_logger()
+inline auto create_verbose_logger() -> std::shared_ptr<spdlog::logger>
 {
-        static std::shared_ptr<spdlog::logger> logger = []() -> auto
-        {
-                auto logger = get_logger("black_desk/cpplib");
-                SPDLOG_LOGGER_INFO(logger, "version {}", VERSION);
-                return logger;
-        }
-        ();
+        auto logger = get_logger("black_desk/cpplib");
+        SPDLOG_LOGGER_INFO(logger, "version {}", VERSION);
         return logger;
+}
+
+inline auto verbose_logger() noexcept -> std::shared_ptr<spdlog::logger>
+{
+        static std::shared_ptr<spdlog::logger> verbose_logger =
+                create_verbose_logger();
+        return verbose_logger;
 }
 
 #endif
 
-} // namespace linglong::box::util
+} // namespace black_desk::cpplib
