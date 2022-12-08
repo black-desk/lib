@@ -45,4 +45,9 @@ FileDescriptorHolder::FileDescriptorHolder(FileDescriptorHolder &&that) noexcept
         that.file_descriptor = 0;
 }
 
+auto FileDescriptorHolder::fd() const -> int
+{
+        return this->file_descriptor;
+}
+
 } // namespace black_desk::cpplib::Linux

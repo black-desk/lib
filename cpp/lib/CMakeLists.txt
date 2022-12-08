@@ -48,7 +48,7 @@ target_compile_definitions(
 # LINUX
 add_library(
   blackdesk_cpplib_linux
-  Linux/fd.cpp
+  Linux/fd.cpp Linux/libc.cpp
 )
 target_link_libraries(
   blackdesk_cpplib_linux

@@ -1,0 +1,24 @@
+#include <gtest/gtest.h>
+
+#include <fcntl.h>
+
+#include <filesystem>
+
+#include "black_desk/cpplib/Linux/fd.hpp"
+#include "black_desk/cpplib/Linux/libc.hpp"
+
+TEST(Linux, realpath) // NOLINT
+{
+        auto result = black_desk::cpplib::Linux::libc::realpath(".");
+        auto expected = std::filesystem::current_path();
+        ASSERT_EQ(result.string(), expected.string());
+
+        int cwd_fd = open(".", O_PATH);
+        {
+                auto holder =
+                        black_desk::cpplib::Linux::FileDescriptorHolder::hold(
+                                cwd_fd);
+                auto result = black_desk::cpplib::Linux::libc::realpath(holder);
+                auto expected = std::filesystem::current_path();
+        }
+}
