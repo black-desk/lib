@@ -17,10 +17,11 @@ class FileDescriptorHolder {
         auto operator=(FileDescriptorHolder &&that) noexcept
                 -> FileDescriptorHolder &;
 
-        int file_descriptor = 0;
+        [[nodiscard]] auto fd() const -> int;
 
     private:
         explicit FileDescriptorHolder(int file_descriptor) noexcept;
+        int file_descriptor = 0;
 };
 
 } // namespace black_desk::cpplib::Linux

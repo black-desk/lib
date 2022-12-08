@@ -35,7 +35,7 @@ TEST(Linux, FileDescriptorHolderMove) // NOLINT
 
                 ASSERT_TRUE(ptr) << "ptr should point to moved holder";
 
-                ASSERT_EQ(ptr->file_descriptor, cwd_fd)
+                ASSERT_EQ(ptr->fd(), cwd_fd)
                         << "fd got from holder should equal to ret of open";
         }
 
