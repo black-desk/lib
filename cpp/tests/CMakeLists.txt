@@ -1,6 +1,13 @@
-add_executable(blackdesk_cpplib_tests Linux/fd_test.cpp)
+add_executable(
+  blackdesk_cpplib_tests
+  Linux/fd_test.cpp
+)
 
-target_link_libraries(blackdesk_cpplib_tests GTest::gtest_main blackdesk_cpplib_linux)
+target_link_libraries(
+  blackdesk_cpplib_tests
+  PRIVATE GTest::gtest_main
+  PRIVATE blackdesk_cpplib_linux
+)
 
 include(GoogleTest)
 

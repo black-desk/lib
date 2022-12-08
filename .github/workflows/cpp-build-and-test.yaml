@@ -17,7 +17,7 @@ jobs:
       run: |
         sudo apt install -y pip &&
         pip install --user cmake-format &&
-        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --config-files cpp/.cmake-format.py --check "$@" {} +
+        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --config-files cpp/.cmake-format --check "$@" {} +
 
     - name: Lint clang-format
       uses: DoozyX/clang-format-lint-action@v0.14

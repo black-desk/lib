@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13.4..3.25.1)
 
 project(
   blackdesk_cpplib
@@ -8,19 +8,24 @@ project(
 
 include(cmake/dependencies.cmake)
 
-set(CMAKE_CXX_STANDARD 17)
+if(NOT DEFINED BLACKDESK_CPPLIB_MASTER_PROJECT)
+  if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(BLACKDESK_CPPLIB_MASTER_PROJECT ON)
+  else()
+    set(BLACKDESK_CPPLIB_MASTER_PROJECT OFF)
+  endif()
+endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+if(BLACKDESK_CPPLIB_MASTER_PROJECT)
+  if(NOT DEFINED BLACKDESK_CPPLIB_BUILD_TEST)
+    set(BLACKDESK_CPPLIB_BUILD_TEST ON)
+  endif()
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DBLACKDESK_CPPLIB_DEBUG")
-
-find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRE)
-set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
-
-enable_testing()
-
-include_directories(BEFORE include)
-
-add_subdirectory(include)
 add_subdirectory(lib)
-add_subdirectory(tests)
+
+if(BLACKDESK_CPPLIB_BUILD_TEST)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
