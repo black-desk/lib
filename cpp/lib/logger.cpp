@@ -8,7 +8,8 @@
 namespace black_desk::cpplib
 {
 
-auto get_logger(const std::string &name) -> std::shared_ptr<spdlog::logger>
+auto get_logger(const std::string &name) noexcept
+        -> std::shared_ptr<spdlog::logger>
 {
         // Initialize logger
 

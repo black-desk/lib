@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include "black_desk/cpplib/Linux/fd.hpp"
 
