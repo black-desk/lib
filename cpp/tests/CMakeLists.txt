@@ -1,6 +1,6 @@
 add_executable(
   blackdesk_cpplib_tests
-  Linux/fd_test.cpp Linux/libc_test.cpp
+  Linux/fd_test.cpp Linux/utils_test.cpp
 )
 
 target_link_libraries(

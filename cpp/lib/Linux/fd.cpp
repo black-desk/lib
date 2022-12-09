@@ -6,6 +6,7 @@
 
 #include <fmt/format.h>
 
+#include "black_desk/cpplib/logger.hpp"
 #include "black_desk/cpplib/verbose.hpp"
 
 namespace black_desk::cpplib::Linux
@@ -13,7 +14,7 @@ namespace black_desk::cpplib::Linux
 
 auto FileDescriptorHolder::hold(int file_descriptor) -> FileDescriptorHolder
 {
-        BLACKDESK_CPPLIB_VERBOSE("hold fd={}", file_descriptor);
+        BLACKDESK_CPPLIB_VERBOSE_TRACE("hold fd={}", file_descriptor);
         auto ret = FileDescriptorHolder(file_descriptor);
         if (ret.file_descriptor <= 0) {
                 throw fmt::system_error(EINVAL,
@@ -32,8 +33,8 @@ FileDescriptorHolder::FileDescriptorHolder(int file_descriptor) noexcept
 FileDescriptorHolder::~FileDescriptorHolder() noexcept
 {
         if (this->file_descriptor > 0) {
-                BLACKDESK_CPPLIB_VERBOSE("release fd={}",
-                                         this->file_descriptor);
+                BLACKDESK_CPPLIB_VERBOSE_TRACE("release fd={}",
+                                               this->file_descriptor);
                 close(this->file_descriptor);
         }
 }
@@ -41,7 +42,7 @@ FileDescriptorHolder::~FileDescriptorHolder() noexcept
 FileDescriptorHolder::FileDescriptorHolder(FileDescriptorHolder &&that) noexcept
         : file_descriptor(that.file_descriptor)
 {
-        BLACKDESK_CPPLIB_VERBOSE("move fd={}", file_descriptor);
+        BLACKDESK_CPPLIB_VERBOSE_TRACE("move fd={}", file_descriptor);
         that.file_descriptor = 0;
 }
 
