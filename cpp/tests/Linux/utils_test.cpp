@@ -5,11 +5,11 @@
 #include <filesystem>
 
 #include "black_desk/cpplib/Linux/fd.hpp"
-#include "black_desk/cpplib/Linux/libc.hpp"
+#include "black_desk/cpplib/Linux/utils.hpp"
 
 TEST(Linux, realpath) // NOLINT
 {
-        auto result = black_desk::cpplib::Linux::libc::realpath(".");
+        auto result = black_desk::cpplib::Linux::realpath(".");
         auto expected = std::filesystem::current_path();
         ASSERT_EQ(result.string(), expected.string());
 
@@ -18,7 +18,7 @@ TEST(Linux, realpath) // NOLINT
                 auto holder =
                         black_desk::cpplib::Linux::FileDescriptorHolder::hold(
                                 cwd_fd);
-                auto result = black_desk::cpplib::Linux::libc::realpath(holder);
+                auto result = black_desk::cpplib::Linux::realpath(holder);
                 auto expected = std::filesystem::current_path();
         }
 }

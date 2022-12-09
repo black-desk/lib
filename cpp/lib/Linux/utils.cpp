@@ -1,6 +1,5 @@
-#include "black_desk/cpplib/Linux/libc.hpp"
-
 #include <cstdlib>
+#include <filesystem>
 #include <vector>
 
 #include <fmt/format.h>
@@ -8,7 +7,7 @@
 
 #include "black_desk/cpplib/Linux/fd.hpp"
 
-namespace black_desk::cpplib::Linux::libc
+namespace black_desk::cpplib::Linux
 {
 
 auto realpath(const std::filesystem::path &path) -> std::filesystem::path
@@ -28,4 +27,4 @@ auto realpath(const FileDescriptorHolder &fd_holder) -> std::filesystem::path
         return realpath(proc_fd_path);
 }
 
-} // namespace black_desk::cpplib::Linux::libc
+} // namespace black_desk::cpplib::Linux
