@@ -16,10 +16,20 @@
 
 template <>
 struct fmt::formatter<std::exception> {
+        int indent = 0;
         // NOLINTNEXTLINE
         constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin())
         {
-                return ctx.begin();
+                const auto *iter = ctx.begin();
+                for (; iter != ctx.end() && *iter != '}'; iter++) { // NOLINT
+                        if ('0' <= *iter && *iter <= '9') {
+                                // NOLINTNEXTLINE
+                                indent = indent * 10 + (*iter - '0');
+                        } else {
+                                throw format_error("invalid format");
+                        }
+                }
+                return iter;
         }
 
         template <typename FormatContext>
@@ -27,24 +37,18 @@ struct fmt::formatter<std::exception> {
                 -> decltype(ctx.out())
         {
                 const std::exception *current_exception = &exception;
-                int level = 0;
-                bool nested = false;
-                do {
-                        nested = false;
-                        fmt::format_to(ctx.out(), "{}E {}\n",
-                                       std::string(level, ' '),
-                                       current_exception->what());
-                        try {
-                                std::rethrow_if_nested(*current_exception);
-                        } catch (const std::exception &nestedException) {
-                                fmt::format_to(ctx.out(), "{}caused by:\n",
-                                               std::string(level, ' '));
-                                level++;
-                                current_exception = &nestedException;
-                                nested = true;
-                        } catch (...) {
-                        }
-                } while (nested);
+                fmt::format_to(ctx.out(), "{}E {}\n", std::string(indent, ' '),
+                               current_exception->what());
+                try {
+                        std::rethrow_if_nested(*current_exception);
+                } catch (const std::exception &nestedException) {
+                        fmt::format_to(ctx.out(),
+                                       fmt::format("{{}}caused by:\n{{:{}}}",
+                                                   indent + 1),
+                                       std::string(indent, ' '),
+                                       nestedException);
+                } catch (...) {
+                }
                 return ctx.out();
         }
 };
