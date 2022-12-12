@@ -1,0 +1,21 @@
+name: Build and test cpp library
+
+on:
+  push:
+    paths:
+      - .github/workflows/*
+      - cmake/**
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Lint cmake-format
+      run: |
+        sudo apt install -y pip &&
+        pip install --user cmake-format &&
+        cd cmake &&
+        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --config-files .cmake-format --check "$@" {} +
