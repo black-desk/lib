@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <exception>
 #include <string>
 
@@ -13,6 +14,11 @@
         std::throw_with_nested(std::runtime_error(fmt::format( \
                 __FILE__                                       \
                 ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " \t" __VA_ARGS__)))
+// NOLINTNEXTLINE
+#define EXCEPTION(...)                        \
+        throw std::runtime_error(fmt::format( \
+                __FILE__                      \
+                ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " \t" __VA_ARGS__))
 
 template <>
 struct fmt::formatter<std::exception> {
@@ -48,6 +54,7 @@ struct fmt::formatter<std::exception> {
                                        std::string(indent, ' '),
                                        nestedException);
                 } catch (...) {
+                        assert(false);
                 }
                 return ctx.out();
         }
