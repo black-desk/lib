@@ -13,12 +13,12 @@
 #define NESTED_EXCEPTION(...)                                  \
         std::throw_with_nested(std::runtime_error(fmt::format( \
                 __FILE__                                       \
-                ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " \t" __VA_ARGS__)))
+                ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " " __VA_ARGS__)))
 // NOLINTNEXTLINE
 #define EXCEPTION(...)                        \
         throw std::runtime_error(fmt::format( \
                 __FILE__                      \
-                ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " \t" __VA_ARGS__))
+                ":" BLACKDESK_CPPLIB_TOSTRING(__LINE__) " " __VA_ARGS__))
 
 template <>
 struct fmt::formatter<std::exception> {
