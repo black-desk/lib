@@ -19,7 +19,7 @@ TEST(Common, nested_expection_print) // NOLINT
                 }
         } catch (const std::exception &exception) {
                 std::string what = fmt::format("{}", exception);
-                ASSERT_EQ(what, R"(E try 1 failed
+                EXPECT_EQ(what, R"(E try 1 failed
 caused by:
  E try 2 failed
  caused by:
