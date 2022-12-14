@@ -33,7 +33,7 @@ TEST(Common, nested_expection_wrap) // NOLINT
         try {
                 try { // 1
                         try { // 2
-                                EXCEPTION("exception here");
+                                NESTED_EXCEPTION("exception here");
                         } catch (...) {
                                 NESTED_EXCEPTION("try 2 failed");
                         }
