@@ -1,15 +1,18 @@
 #include <gtest/gtest.h>
 
-#include "black_desk/cpplib/json_optional_field.hpp"
-#include "black_desk/cpplib/json_std_optional.hpp"
+#include "black_desk/cpplib/json/json_helper.hpp"
+#include "black_desk/cpplib/json/std_optional.hpp"
+#include "black_desk/cpplib/macro.hpp"
+
+#define REQUIRED BLACKDESK_CPPLIB_LIST
+#define OPTIONAL BLACKDESK_CPPLIB_LIST
 
 struct Point1 {
         int x{}, y{};
         std::optional<std::string> tag;
 };
 
-BLACKDESK_CPPLIB_NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_OPTIONAL(
-        Point1, BLACKDESK_CPPLIB_NLOHMANN_DEFINE_TYPE_OPTIONAL(tag), x, y);
+BLACKDESK_CPPLIB_JSON_NON_INTRUSIVE(Point1, REQUIRED(x, y), OPTIONAL(tag));
 
 struct Point2 {
     private:
@@ -17,9 +20,7 @@ struct Point2 {
         std::optional<std::string> tag;
 
     public:
-        BLACKDESK_CPPLIB_NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_OPTIONAL(
-                Point2, BLACKDESK_CPPLIB_NLOHMANN_DEFINE_TYPE_OPTIONAL(tag), x,
-                y);
+        BLACKDESK_CPPLIB_JSON_INTRUSIVE(Point2, REQUIRED(x, y), OPTIONAL(tag));
         FRIEND_TEST(Json, OptionalField);
 };
 
