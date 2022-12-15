@@ -6,8 +6,7 @@
 
 #include <fmt/format.h>
 
-#define BLACKDESK_CPPLIB_STRINGIFY(x) #x
-#define BLACKDESK_CPPLIB_TOSTRING(x) BLACKDESK_CPPLIB_STRINGIFY(x)
+#include "black_desk/cpplib/macro.hpp"
 
 // NOLINTNEXTLINE
 #define NESTED_EXCEPTION(...)                                               \
