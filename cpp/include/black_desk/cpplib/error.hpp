@@ -8,16 +8,27 @@
 
 #include "black_desk/cpplib/macro.hpp"
 
+namespace black_desk::cpplib
+{
+
+template <typename T>
+[[noreturn]] inline void throw_with_nested_if_current_exception(T &&exception)
+{
+        if (std::current_exception() != nullptr) {
+                std::throw_with_nested(std::forward<T>(exception));
+        } else {
+                throw std::forward<T>(exception);
+        }
+}
+
+} // namespace black_desk::cpplib
+
 // NOLINTNEXTLINE
 #define NESTED_EXCEPTION(...)                                               \
-        if (std::current_exception() != nullptr)                            \
-                std::throw_with_nested(std::runtime_error(                  \
+        black_desk::cpplib::throw_with_nested_if_current_exception(         \
+                std::runtime_error(                                         \
                         fmt::format(__FILE__ ":" BLACKDESK_CPPLIB_TOSTRING( \
-                                __LINE__) " " __VA_ARGS__)));               \
-        else                                                                \
-                throw std::runtime_error(                                   \
-                        fmt::format(__FILE__ ":" BLACKDESK_CPPLIB_TOSTRING( \
-                                __LINE__) " " __VA_ARGS__))
+                                __LINE__) " " __VA_ARGS__)));
 
 template <>
 struct fmt::formatter<std::exception> {
