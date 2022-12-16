@@ -10,7 +10,7 @@ func Trace(err error) error {
 	if !ok {
 		panic("failed to get caller")
 	}
-	return fmt.Errorf("%s:%d %w", file, line, err)
+	return fmt.Errorf("%s:%d\n%w", file, line, err)
 }
 
 func Annotate(err error, message string) error {
@@ -19,5 +19,5 @@ func Annotate(err error, message string) error {
 		panic("failed to get caller")
 	}
 
-	return fmt.Errorf("%s:%d [%v] %w", file, line, message, err)
+	return fmt.Errorf("%s:%d [%v]\n%w", file, line, message, err)
 }
