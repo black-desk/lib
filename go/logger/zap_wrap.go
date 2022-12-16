@@ -2,17 +2,29 @@ package logger
 
 import (
 	"os"
+	"path/filepath"
 
+	"github.com/adrg/xdg"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 func newLogger(name string) *zap.SugaredLogger {
 
-	var err error
+	var (
+		err    error
+		config zap.Config
+	)
 
-	config := zap.NewDevelopmentConfig()
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	logMode := os.Getenv("LOG_MODE")
+	if logMode == "develop" {
+		config = zap.NewDevelopmentConfig()
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	} else {
+		config = zap.NewProductionConfig()
+		config.OutputPaths = []string{filepath.Join(xdg.CacheHome, name+"_log.json")}
+		config.ErrorOutputPaths = []string{filepath.Join(xdg.CacheHome, name+"_log.json")}
+	}
 
 	logLevelEnv := os.Getenv("LOG_LEVEL")
 	err = config.Level.UnmarshalText([]byte(logLevelEnv))
@@ -28,8 +40,6 @@ func newLogger(name string) *zap.SugaredLogger {
 	}
 
 	slogger := logger.Named(name).Sugar()
-
-	loggerMap.Store(name, slogger)
 
 	return slogger
 }
