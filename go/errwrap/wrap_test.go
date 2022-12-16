@@ -116,7 +116,6 @@ func TestAnnotate(t *testing.T) {
 		})
 
 		Convey("The error should contain annotation", func() {
-			errStr := err.Error()
 			So(
 				errStr,
 				ShouldContainSubstring,
@@ -154,7 +153,6 @@ func TestAnnotateNested(t *testing.T) {
 		})
 
 		Convey("The error should contain file name", func() {
-			errStr := err.Error()
 			_, filename, _, _ := runtime.Caller(0)
 			So(
 				errStr,
@@ -179,7 +177,6 @@ func TestAnnotateNested(t *testing.T) {
 		Convey(
 			"The error should contain annotation",
 			func() {
-				errStr := err.Error()
 				So(
 					errStr, ShouldContainSubstring,
 					annotation1,
