@@ -6,6 +6,10 @@ import (
 )
 
 func Trace(err error) error {
+	if err == nil {
+		return nil
+	}
+
 	_, file, line, ok := runtime.Caller(1)
 	if !ok {
 		panic("failed to get caller")
@@ -14,6 +18,10 @@ func Trace(err error) error {
 }
 
 func Annotate(err error, message string, a ...any) error {
+	if err == nil {
+		return nil
+	}
+
 	_, file, line, ok := runtime.Caller(1)
 	if !ok {
 		panic("failed to get caller")

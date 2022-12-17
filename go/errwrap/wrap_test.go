@@ -9,7 +9,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/black-desk/lib/go/errwrap"
+	. "github.com/black-desk/lib/go/errwrap"
 )
 
 type MyError struct{}
@@ -27,7 +27,7 @@ func (e *MyError) Is(target error) bool {
 
 func TestTrace(t *testing.T) {
 	Convey("Create a traced error", t, func() {
-		err := errwrap.Trace(&MyError{})
+		err := Trace(&MyError{})
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -57,8 +57,8 @@ func TestTrace(t *testing.T) {
 
 func TestTraceNested(t *testing.T) {
 	Convey("Create a nest-traced error", t, func() {
-		err := errwrap.Trace( // -5
-			errwrap.Trace( // -4
+		err := Trace( // -5
+			Trace( // -4
 				&MyError{}, // -3
 			), // -2
 		) // -1
@@ -93,7 +93,7 @@ func TestTraceNested(t *testing.T) {
 func TestAnnotate(t *testing.T) {
 	Convey("Create an annotated error", t, func() {
 		annotation := "some annotation"
-		err := errwrap.Annotate(&MyError{}, annotation)
+		err := Annotate(&MyError{}, annotation)
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -129,7 +129,7 @@ func TestAnnotate(t *testing.T) {
 	})
 
 	Convey("Create an annotated error with fmt.Sprintf", t, func() {
-		err := errwrap.Annotate(&MyError{}, "some annotation %v", "arg")
+		err := Annotate(&MyError{}, "some annotation %v", "arg")
 		errStr := err.Error()
 		Convey("The error should contain fmt arg", func() {
 			So(errStr, ShouldContainSubstring, "arg")
@@ -141,8 +141,8 @@ func TestAnnotateNested(t *testing.T) {
 	Convey("Create a nest-annotated error", t, func() {
 		annotation1 := "some annotation 1"
 		annotation2 := "some annotation 2"
-		err := errwrap.Annotate( // -6
-			errwrap.Annotate( // -5
+		err := Annotate( // -6
+			Annotate( // -5
 				&MyError{},   // -4
 				annotation1), //-3
 			annotation2, // -2
@@ -198,6 +198,22 @@ func TestAnnotateNested(t *testing.T) {
 
 		Convey("The error should be a MyError", func() {
 			So(errors.Is(err, &MyError{}), ShouldBeTrue)
+		})
+	})
+}
+
+func TestWrapNil(t *testing.T) {
+	Convey("Try to trace nil", t, func() {
+		err := Trace(nil)
+		Convey("Should get nil", func() {
+			So(err, ShouldBeNil)
+		})
+	})
+
+	Convey("Try to annotate nil", t, func() {
+		err := Annotate(nil,"some annotation")
+		Convey("Should get nil", func() {
+			So(err, ShouldBeNil)
 		})
 	})
 }
