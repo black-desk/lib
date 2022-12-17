@@ -127,6 +127,14 @@ func TestAnnotate(t *testing.T) {
 			So(errors.Is(err, &MyError{}), ShouldBeTrue)
 		})
 	})
+
+	Convey("Create an annotated error with fmt.Sprintf", t, func() {
+		err := errwrap.Annotate(&MyError{}, "some annotation %v", "arg")
+		errStr := err.Error()
+		Convey("The error should contain fmt arg", func() {
+			So(errStr, ShouldContainSubstring, "arg")
+		})
+	})
 }
 
 func TestAnnotateNested(t *testing.T) {
