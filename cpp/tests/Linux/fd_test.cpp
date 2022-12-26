@@ -1,12 +1,11 @@
-#include <gtest/gtest.h>
-
 #include <fcntl.h>
 
 #include "black_desk/cpplib/Linux/fd.hpp"
+#include "black_desk/cpplib/test.hpp"
 
 using black_desk::cpplib::Linux::FileDescriptorHolder;
 
-TEST(Linux, FileDescriptorHolderBasicRAII) // NOLINT
+TEST(Linux, FileDescriptorHolderBasicRAII)
 {
         int cwd_fd = open(".", O_PATH);
         {
@@ -19,7 +18,7 @@ TEST(Linux, FileDescriptorHolderBasicRAII) // NOLINT
                 << "fd should have been closed by holder, close a closed fd should set errno to EBADF(9)";
 }
 
-TEST(Linux, FileDescriptorHolderMove) // NOLINT
+TEST(Linux, FileDescriptorHolderMove)
 {
         int cwd_fd = open(".", O_PATH);
 
