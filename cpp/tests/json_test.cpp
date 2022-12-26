@@ -1,8 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "black_desk/cpplib/json/json_helper.hpp"
 #include "black_desk/cpplib/json/std_optional.hpp"
 #include "black_desk/cpplib/macro.hpp"
+#include "black_desk/cpplib/test.hpp"
 
 #define REQUIRED BLACKDESK_CPPLIB_LIST
 #define OPTIONAL BLACKDESK_CPPLIB_LIST
@@ -24,7 +23,7 @@ struct Point2 {
         FRIEND_TEST(Json, OptionalField);
 };
 
-TEST(Json, OptionalField) // NOLINT
+TEST(Json, OptionalField)
 {
         nlohmann::json json = R"({"x":0,"y":0,"tag":"zero point"})"_json;
         auto point_1 = json.get<Point1>();

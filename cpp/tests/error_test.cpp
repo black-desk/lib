@@ -1,8 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "black_desk/cpplib/error.hpp"
+#include "black_desk/cpplib/test.hpp"
 
-TEST(Common, nested_expection_print) // NOLINT
+TEST(Common, nested_expection_print)
 {
         try {
                 try { // 1
@@ -28,7 +27,7 @@ caused by:
         }
 }
 
-TEST(Common, nested_expection_wrap) // NOLINT
+TEST(Common, nested_expection_wrap)
 {
         try {
                 try { // 1
@@ -42,17 +41,17 @@ TEST(Common, nested_expection_wrap) // NOLINT
                 }
         } catch (const std::exception &exception) {
                 std::string what = fmt::format("{}", exception);
-                EXPECT_NE(what.find("41"), std::string::npos)
+                EXPECT_NE(what.find("40"), std::string::npos)
                         << "should found line number of try 1";
                 EXPECT_NE(what.find("try 1 failed"), std::string::npos)
                         << "should found try 1 message";
 
-                EXPECT_NE(what.find("38"), std::string::npos)
+                EXPECT_NE(what.find("37"), std::string::npos)
                         << "should found line number of try 2";
                 EXPECT_NE(what.find("try 2 failed"), std::string::npos)
                         << "should found try 2 message";
 
-                EXPECT_NE(what.find("36"), std::string::npos)
+                EXPECT_NE(what.find("35"), std::string::npos)
                         << "should found line number of exception";
                 EXPECT_NE(what.find("exception here"), std::string::npos)
                         << "should found exception message";
