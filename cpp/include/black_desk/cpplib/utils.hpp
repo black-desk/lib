@@ -23,7 +23,7 @@ template <typename T>
 auto split(const std::string &input, const T &delimiter)
         -> std::vector<std::string>
 {
-        std::string delim = delimiter;
+        std::string delim = { delimiter };
         size_t pos_start = 0;
         size_t pos_end = -1;
         size_t delim_len = delim.length();
