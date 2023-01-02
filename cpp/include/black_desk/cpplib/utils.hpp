@@ -7,10 +7,16 @@
 namespace black_desk::cpplib::strings
 {
 
-inline auto join(const std::vector<std::string> &strs,
-                 const std::string &sep = " ") -> std::string
+template <typename T>
+auto join(const std::vector<std::string> &strs, const T &sep) -> std::string
 {
-        return fmt::format("{}", fmt::join(strs.begin(), strs.end(), sep));
+        return fmt::format("{}", fmt::join(strs.begin(), strs.end(),
+                                           std::string{ sep }));
+}
+
+inline auto join(const std::vector<std::string> &strs)
+{
+        return join(strs, ' ');
 }
 
 template <typename T>
