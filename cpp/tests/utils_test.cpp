@@ -1,7 +1,14 @@
 #include "black_desk/cpplib/test.hpp"
 #include "black_desk/cpplib/utils.hpp"
 
-TEST(Utils, Split)
+TEST(Strings, Join)
+{
+        std::vector<std::string> input = { "1", "2", "3" };
+        auto result = black_desk::cpplib::strings::join(input);
+        ASSERT_EQ(result, "1 2 3");
+}
+
+TEST(Strings, Split)
 {
         std::string input = "1;;2;;3;;4";
         auto components = black_desk::cpplib::strings::split(input, ";;");
