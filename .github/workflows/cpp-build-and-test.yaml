@@ -12,6 +12,9 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
     - name: Lint cmake-format
       run: |
@@ -33,6 +36,8 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
     - name: Install clang-tidy
       run: sudo apt-get install -y clang-tidy
@@ -51,6 +56,8 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
     - name: Install clang and clang-tidy
       run: sudo apt-get install -y clang-tidy clang

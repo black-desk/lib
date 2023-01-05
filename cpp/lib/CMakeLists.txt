@@ -10,10 +10,7 @@ execute_process(
 configure_file(version.hpp.in version.hpp)
 
 # CORE
-add_library(
-  blackdesk_cpplib_core
-  common.cpp logger.cpp
-)
+add_library(blackdesk_cpplib_core common.cpp logger.cpp)
 target_link_libraries(
   blackdesk_cpplib_core
   PUBLIC spdlog::spdlog
@@ -46,10 +43,7 @@ target_compile_definitions(
 )
 
 # LINUX
-add_library(
-  blackdesk_cpplib_linux
-  Linux/fd.cpp Linux/utils.cpp Linux/rlimit.cpp
-)
+add_library(blackdesk_cpplib_linux Linux/fd.cpp Linux/utils.cpp Linux/rlimit.cpp)
 target_link_libraries(
   blackdesk_cpplib_linux
   PUBLIC fmt::fmt

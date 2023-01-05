@@ -12,10 +12,12 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
     - name: Lint cmake-format
       run: |
         sudo apt install -y pip &&
         pip install --user cmake-format &&
         cd cmake &&
-        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --config-files .cmake-format --check "$@" {} +
+        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --check "$@" {} +
