@@ -1,12 +1,10 @@
 package logger
 
 import (
-	"log/syslog"
 	"os"
 	"path/filepath"
 
 	"github.com/adrg/xdg"
-	"github.com/tchap/zapext/v2/zapsyslog"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -50,12 +48,7 @@ func newLogger(name string) *zap.SugaredLogger {
 		panic(err)
 	}
 
-	syslogWriter, err := syslog.New(syslog.LOG_USER, "")
-	if err != nil {
-		panic(err)
-	}
-
-	core := zapcore.NewTee(
+	cores := []zapcore.Core{
 		zapcore.NewCore(
 			zapcore.NewConsoleEncoder(consoleConfig),
 			zapcore.Lock(os.Stderr),
@@ -66,12 +59,16 @@ func newLogger(name string) *zap.SugaredLogger {
 			zapcore.Lock(logFile),
 			zap.WarnLevel,
 		),
-		zapsyslog.NewCore(
-			zapcore.WarnLevel,
-			zapcore.NewJSONEncoder(jsonConfig),
-			syslogWriter,
-		),
-	)
+	}
+
+	// NOTE(black_desk): https://stackoverflow.com/questions/42083059/getting-syslog-writer-undefined
+	syslogCore := getSyslogCore(jsonConfig)
+	if syslogCore != nil {
+		cores = append(cores, syslogCore)
+
+	}
+
+	core := zapcore.NewTee(cores...)
 
 	logger := zap.New(core, options...)
 
