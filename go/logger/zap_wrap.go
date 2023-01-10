@@ -1,10 +1,12 @@
 package logger
 
 import (
+	"log/syslog"
 	"os"
 	"path/filepath"
 
 	"github.com/adrg/xdg"
+	"github.com/tchap/zapext/v2/zapsyslog"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -13,31 +15,44 @@ func newLogger(name string) *zap.SugaredLogger {
 
 	var (
 		err    error
-		config zap.Config
+		config zapcore.EncoderConfig
+		option zap.Option
 	)
 
 	logMode := os.Getenv("LOG_MODE")
-	if logMode == "develop" {
-		config = zap.NewDevelopmentConfig()
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	} else {
-		config = zap.NewProductionConfig()
-		config.OutputPaths = []string{filepath.Join(xdg.CacheHome, name+"_log.json")}
-		config.ErrorOutputPaths = []string{filepath.Join(xdg.CacheHome, name+"_log.json")}
+	switch logMode {
+	case "develop":
+		config = zap.NewDevelopmentEncoderConfig()
+		option = zap.AddStacktrace(zap.WarnLevel)
+	default:
+		config = zap.NewProductionEncoderConfig()
+		option = zap.AddStacktrace(zap.ErrorLevel)
 	}
 
 	logLevelEnv := os.Getenv("LOG_LEVEL")
-	err = config.Level.UnmarshalText([]byte(logLevelEnv))
+	consoleLevel := zap.NewAtomicLevel()
+	err = consoleLevel.UnmarshalText([]byte(logLevelEnv))
 	if err != nil {
 		panic(err)
 	}
 
-	var logger *zap.Logger
-
-	logger, err = config.Build()
+	logFile, err := os.OpenFile(filepath.Join(xdg.CacheHome, name+".log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0660)
 	if err != nil {
 		panic(err)
 	}
+
+	syslogWriter, err := syslog.New(syslog.LOG_USER, "")
+	if err != nil {
+		panic(err)
+	}
+
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewConsoleEncoder(config), zapcore.Lock(os.Stderr), consoleLevel),
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.Lock(logFile), zap.WarnLevel),
+		zapsyslog.NewCore(zapcore.WarnLevel, zapcore.NewJSONEncoder(config), syslogWriter),
+	)
+
+	logger := zap.New(core, option)
 
 	slogger := logger.Named(name).Sugar()
 

@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/adrg/xdg v0.4.0
 	github.com/smartystreets/goconvey v1.7.2
+	github.com/tchap/zapext/v2 v2.1.1
 	go.uber.org/zap v1.24.0
 )
 
