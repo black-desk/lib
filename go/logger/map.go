@@ -6,10 +6,17 @@ import (
 	"go.uber.org/zap"
 )
 
-var loggerMap = sync.Map{}
+var loggerMapMutex sync.Mutex
+var loggerMap = map[string]any{}
 
 func Get(name string) *zap.SugaredLogger {
-	value, _ := loggerMap.LoadOrStore(name, newLogger(name))
-	log, _ := value.(*zap.SugaredLogger)
-	return log
+	loggerMapMutex.Lock()
+        defer loggerMapMutex.Unlock()
+	oldLog, ok := loggerMap[name]
+        if ok {
+                return oldLog.(*zap.SugaredLogger)
+        }
+
+        newLog := newLogger(name)
+	return newLog
 }

@@ -5,3 +5,7 @@ updates:
     schedule:
         interval: "daily"
     directory: /
+  - package-ecosystem: gomod
+    schedule:
+        interval: "daily"
+    directory: /go
