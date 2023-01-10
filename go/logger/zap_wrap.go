@@ -14,20 +14,25 @@ import (
 func newLogger(name string) *zap.SugaredLogger {
 
 	var (
-		err    error
-		config zapcore.EncoderConfig
-		option zap.Option
+		err     error
+		options []zap.Option
 	)
 
 	logMode := os.Getenv("LOG_MODE")
 	switch logMode {
 	case "develop":
-		config = zap.NewDevelopmentEncoderConfig()
-		option = zap.AddStacktrace(zap.WarnLevel)
+		options = []zap.Option{
+			zap.Development(),
+			zap.AddStacktrace(zap.WarnLevel),
+		}
 	default:
-		config = zap.NewProductionEncoderConfig()
-		option = zap.AddStacktrace(zap.ErrorLevel)
+		options = []zap.Option{zap.AddStacktrace(zap.ErrorLevel)}
 	}
+
+	consoleConfig := zap.NewDevelopmentEncoderConfig()
+	consoleConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	jsonConfig := zap.NewProductionEncoderConfig()
 
 	logLevelEnv := os.Getenv("LOG_LEVEL")
 	consoleLevel := zap.NewAtomicLevel()
@@ -36,7 +41,11 @@ func newLogger(name string) *zap.SugaredLogger {
 		panic(err)
 	}
 
-	logFile, err := os.OpenFile(filepath.Join(xdg.CacheHome, name+".log"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0660)
+	logFile, err := os.OpenFile(
+		filepath.Join(xdg.CacheHome, name+".log"),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0660,
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -47,12 +56,24 @@ func newLogger(name string) *zap.SugaredLogger {
 	}
 
 	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewConsoleEncoder(config), zapcore.Lock(os.Stderr), consoleLevel),
-		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.Lock(logFile), zap.WarnLevel),
-		zapsyslog.NewCore(zapcore.WarnLevel, zapcore.NewJSONEncoder(config), syslogWriter),
+		zapcore.NewCore(
+			zapcore.NewConsoleEncoder(consoleConfig),
+			zapcore.Lock(os.Stderr),
+			consoleLevel,
+		),
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(jsonConfig),
+			zapcore.Lock(logFile),
+			zap.WarnLevel,
+		),
+		zapsyslog.NewCore(
+			zapcore.WarnLevel,
+			zapcore.NewJSONEncoder(jsonConfig),
+			syslogWriter,
+		),
 	)
 
-	logger := zap.New(core, option)
+	logger := zap.New(core, options...)
 
 	slogger := logger.Named(name).Sugar()
 
