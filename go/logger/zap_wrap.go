@@ -61,7 +61,8 @@ func newLogger(name string) *zap.SugaredLogger {
 		),
 	}
 
-	// NOTE(black_desk): https://stackoverflow.com/questions/42083059/getting-syslog-writer-undefined
+	// NOTE(black_desk): Syslog is not implemented in windows and plan9.
+	// https://stackoverflow.com/questions/42083059/getting-syslog-writer-undefined
 	syslogCore := getSyslogCore(jsonConfig)
 	if syslogCore != nil {
 		cores = append(cores, syslogCore)
@@ -70,9 +71,5 @@ func newLogger(name string) *zap.SugaredLogger {
 
 	core := zapcore.NewTee(cores...)
 
-	logger := zap.New(core, options...)
-
-	slogger := logger.Named(name).Sugar()
-
-	return slogger
+	return zap.New(core, options...).Named(name).Sugar()
 }
