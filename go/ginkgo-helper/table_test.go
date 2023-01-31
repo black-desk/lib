@@ -20,7 +20,7 @@ var _ = Describe("ginkgo helper", func() {
 				Expect(arg[1] - arg[0]).To(Equal(1))
 			})
 		},
-		ContextEntry([]int{1, 2}),
-		ContextEntry([]int{2, 3}).WithFmt("2 3"),
+		ContextTableEntry([]int{1, 2}),
+		ContextTableEntry([]int{2, 3}).WithFmt("2 3"),
 	)
 })

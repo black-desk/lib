@@ -7,12 +7,12 @@ import (
 	"github.com/onsi/ginkgo/v2"
 )
 
-type entry struct {
+type ContextTableEntryT struct {
 	fmtArgs []any
 	args    []reflect.Value
 }
 
-func ContextTable(message string, fn any, entries ...*entry) {
+func ContextTable(message string, fn any, entries ...*ContextTableEntryT) {
 	for i := range entries {
 		ginkgo.Context(fmt.Sprintf(message, entries[i].fmtArgs...), func() {
 			vfn := reflect.ValueOf(fn)
@@ -21,13 +21,13 @@ func ContextTable(message string, fn any, entries ...*entry) {
 	}
 }
 
-func (c *entry) WithFmt(args ...any) *entry {
+func (c *ContextTableEntryT) WithFmt(args ...any) *ContextTableEntryT {
 	c.fmtArgs = args
 	return c
 }
 
-func ContextEntry(args ...any) *entry {
-	ret := &entry{}
+func ContextTableEntry(args ...any) *ContextTableEntryT {
+	ret := &ContextTableEntryT{}
 	for i := range args {
 		ret.args = append(ret.args, reflect.ValueOf(args[i]))
 	}
