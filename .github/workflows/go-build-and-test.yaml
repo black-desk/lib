@@ -7,7 +7,7 @@ on:
       - go/**
 
 jobs:
-  build:
+  build-go:
 
     runs-on: ubuntu-latest
     steps:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ^1.19.2
+          go-version: stable
 
       - name: Build
         run: cd go && go build -v ./...
