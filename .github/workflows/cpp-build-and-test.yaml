@@ -7,29 +7,6 @@ on:
       - cpp/**
 
 jobs:
-  format-check:
-    runs-on: ubuntu-latest
-    steps:
-
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        fetch-depth: 0
-
-    - name: Lint cmake-format
-      run: |
-        sudo apt install -y pip &&
-        pip install --user cmake-format &&
-        cd cpp &&
-        find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --check "$@" {} +
-
-    - name: Lint clang-format
-      uses: DoozyX/clang-format-lint-action@v0.14
-      with:
-        source: cpp
-        exclude: cpp/third_party
-        clangFormatVersion: 14
-
   build-by-gcc:
 
     runs-on: ubuntu-latest
