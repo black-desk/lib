@@ -24,7 +24,7 @@ jobs:
         find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format --check "$@" {} +
 
     - name: Lint clang-format
-      uses: DoozyX/clang-format-lint-action@v0.14
+      uses: DoozyX/clang-format-lint-action@v0.15
       with:
         source: cpp
         exclude: cpp/third_party
