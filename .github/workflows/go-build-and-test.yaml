@@ -1,25 +1,27 @@
 name: Build and test go package
 
-on:
-  pull_request:
-    paths:
-      - .github/workflows/*
-      - go/**
+on: [pull_request]
 
 jobs:
   build-go:
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            workflows:
+              - '.github/workflows/*'
+            go:
+              - 'go/**'
 
       - name: Set up Go
+        if: steps.filter.outputs.go == 'true' || steps.filter.outputs.workflows == 'true'
         uses: actions/setup-go@v3
         with:
           go-version: stable
 
-      - name: Build
-        run: cd go && go build -v ./...
-
-      - name: Test
-        run: cd go && go test -v ./...
+      - name: Build & test
+        if: steps.filter.outputs.go == 'true' || steps.filter.outputs.workflows == 'true'
+        run: cd go && go build -v ./... && go test -v ./...
