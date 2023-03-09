@@ -1,7 +1,7 @@
 name: Build and test cpp library
 
 on:
-  push:
+  pull_request:
     paths:
       - .github/workflows/*
       - cpp/**
