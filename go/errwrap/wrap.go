@@ -36,7 +36,3 @@ func formatAnnotate(annotate []any) string {
 
 	return fmt.Sprintf(" [ "+msg+" ]", annotate[1:]...)
 }
-
-func Annotate(err error, message string, a ...any) error {
-	return trace(2, err, append([]any{message}, a...)...)
-}
