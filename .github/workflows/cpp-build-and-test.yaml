@@ -13,18 +13,17 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - name: Install clang-tidy
-      run: sudo apt-get install -y clang-tidy
+    - name: Install clang-tidy and ninja
+      run: sudo apt-get install -y clang-tidy ninja-build
 
     - name: Build "Debug" and test using g++
       run: |
         cd cpp &&
         rm build -rf &&
-        cmake -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" -DCMAKE_BUILD_TYPE=Debug &&
-        cmake --build build -j 16 &&
+        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
+              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
+        cmake --build build &&
         cmake --build build -t test
 
   build-by-clang:
@@ -33,16 +32,16 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
     - name: Install clang and clang-tidy
-      run: sudo apt-get install -y clang-tidy clang
+      run: sudo apt-get install -y clang-tidy ninja-build clang
 
     - name: Build "Debug" and test using clang++
       run: |
         cd cpp &&
         rm build -rf &&
-        env CXX=clang++ cmake -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" -DCMAKE_BUILD_TYPE=Debug &&
-        cmake --build build -j 16 &&
+        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
+              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
+        cmake --build build &&
         cmake --build build -t test
