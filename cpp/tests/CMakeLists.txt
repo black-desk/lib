@@ -1,6 +1,10 @@
-add_executable(
-  blackdesk_cpplib_tests Linux/fd_test.cpp Linux/utils_test.cpp error_test.cpp json_test.cpp
-                         utils_test.cpp type_test.cpp
+add_executable(blackdesk_cpplib_tests)
+
+file(GLOB_RECURSE BLACKDESK_CPPLIB_TESTS_SOURCE FOLLOW_SYMLINKS CONFIGURE_DEPENDS *.cpp *.h)
+
+target_sources(
+  blackdesk_cpplib_tests
+  PRIVATE ${BLACKDESK_CPPLIB_TESTS_SOURCE}
 )
 
 target_link_libraries(
