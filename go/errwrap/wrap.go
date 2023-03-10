@@ -6,15 +6,11 @@ import (
 )
 
 func Trace(err error, annotate ...any) error {
-	return trace(2, err, annotate...)
-}
-
-func trace(level int, err error, annotate ...any) error {
 	if err == nil {
 		return nil
 	}
 
-	_, file, line, ok := runtime.Caller(level)
+	_, file, line, ok := runtime.Caller(1)
 	if !ok {
 		panic("failed to get caller")
 	}
