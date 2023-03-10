@@ -16,13 +16,19 @@ jobs:
           cpp:
             - 'cpp/**'
 
-    - name: Build "Debug" and test using g++
+    - name: Build "Debug" and "Release" then test using g++
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build &&
         cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
+              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
+        cmake --build build &&
+        cmake --build build -t test &&
+        rm build -rf &&
+        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
               -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
         cmake --build build &&
@@ -41,13 +47,20 @@ jobs:
           cpp:
             - 'cpp/**'
 
-    - name: Build "Debug" and test using clang++
+    - name: Build "Debug" and "Release" then test using clang++
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build clang &&
         cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
+              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
+        cmake --build build &&
+        cmake --build build -t test &&
+        rm build -rf &&
+        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
               -DCMAKE_CXX_COMPILER=clang++ \
               -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
