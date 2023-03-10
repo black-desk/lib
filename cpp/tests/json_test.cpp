@@ -3,15 +3,12 @@
 #include "black_desk/cpplib/macro.hpp"
 #include "black_desk/cpplib/test.hpp"
 
-#define REQUIRED BLACKDESK_CPPLIB_LIST
-#define OPTIONAL BLACKDESK_CPPLIB_LIST
-
 struct Point1 {
         int x{}, y{};
         std::optional<std::string> tag;
 };
 
-BLACKDESK_CPPLIB_JSON_NON_INTRUSIVE(Point1, REQUIRED(x, y), OPTIONAL(tag));
+BLACKDESK_CPPLIB_JSON_NON_INTRUSIVE(Point1, (x, y), (tag));
 
 struct Point2 {
     private:
@@ -19,7 +16,7 @@ struct Point2 {
         std::optional<std::string> tag;
 
     public:
-        BLACKDESK_CPPLIB_JSON_INTRUSIVE(Point2, REQUIRED(x, y), OPTIONAL(tag));
+        BLACKDESK_CPPLIB_JSON_INTRUSIVE(Point2, (x, y), (tag));
         FRIEND_TEST(Json, OptionalField);
 };
 
