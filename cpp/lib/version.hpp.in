@@ -5,9 +5,12 @@
 namespace black_desk::cpplib::internal
 {
 
-static constexpr std::string_view VERSION = "@CMAKE_PROJECT_VERSION@"
-#ifdef BLACKDESK_CPPLIB_DEBUG
-                                            "|@GIT@"
+static constexpr std::string_view VERSION =
+#ifndef BLACKDESK_CPPLIB_DEBUG
+        "v"
+        "@CMAKE_PROJECT_VERSION@"
+#else
+        "@GIT@"
 #endif
         ;
 
