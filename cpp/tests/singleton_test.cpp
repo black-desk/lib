@@ -1,11 +1,15 @@
-#include "black_desk/cpplib/singleton.hpp"
+#include "TestSingleton.hpp"
+#include "black_desk/cpplib/test.hpp"
 
-class testSingleton;
+TEST(Singleton, Basics)
+{
+        TestSingleton a;
+        a->a = 1;
+        a->b = 2;
+        EXPECT_EQ(a->add(), 3);
 
-typedef const black_desk::cpplib::Singleton<testSingleton> TestSingleton;
-
-class testSingleton final : private black_desk::cpplib::SingletonBase {
-    private:
-        testSingleton();
-        friend black_desk::cpplib::Singleton<testSingleton>;
-};
+        TestSingleton b;
+        EXPECT_EQ(b->a, 1);
+        EXPECT_EQ(b->b, 2);
+        EXPECT_EQ(b->add(), 3);
+}
