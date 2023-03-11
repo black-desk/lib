@@ -24,6 +24,7 @@ jobs:
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build &&
+        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
@@ -54,6 +55,7 @@ jobs:
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build &&
+        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
@@ -84,6 +86,7 @@ jobs:
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build clang &&
+        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
@@ -115,6 +118,7 @@ jobs:
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build clang &&
+        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
