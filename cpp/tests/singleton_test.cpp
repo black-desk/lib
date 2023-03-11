@@ -17,6 +17,7 @@ TEST(Singleton, Basics)
 
         TestSingleton c;
         c->a = 2;
+        EXPECT_EQ(&b->b, &c->b);
         EXPECT_EQ(b->a, 2);
         EXPECT_EQ(b->b, 2);
         EXPECT_EQ(b->add(), 4);
