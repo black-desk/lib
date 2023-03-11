@@ -18,14 +18,6 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-  GITHUB_REPOSITORY docopt/docopt.cpp
-  NAME docopt
-  GIT_TAG master
-  VERSION 0.6.2
-  GIT_SHALLOW ON
-)
-
-CPMAddPackage(
   GITHUB_REPOSITORY google/googletest
   NAME GTest
   VERSION 1.12.1
