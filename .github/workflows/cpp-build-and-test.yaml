@@ -3,7 +3,7 @@ name: Build and test cpp library
 on: [pull_request]
 
 jobs:
-  build-by-gcc:
+  build-by-gcc-debug:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -16,17 +16,46 @@ jobs:
           cpp:
             - 'cpp/**'
 
-    - name: Build "Debug" and "Release" then test using g++
+    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}-${{ matrix.os }}
+    - name: Build "Debug" then test using g++
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build &&
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
               -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
         cmake --build build &&
-        cmake --build build -t test &&
+        cmake --build build -t test
+
+  build-by-gcc-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          workflows:
+            - '.github/workflows/*'
+          cpp:
+            - 'cpp/**'
+
+    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}-${{ matrix.os }}
+    - name: Build "Release" then test using g++
+      if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      run: |
+        sudo apt-get install -y clang-tidy ninja-build &&
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
+        cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
@@ -34,7 +63,7 @@ jobs:
         cmake --build build &&
         cmake --build build -t test
 
-  build-by-clang:
+  build-by-clang-debug:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -47,10 +76,15 @@ jobs:
           cpp:
             - 'cpp/**'
 
-    - name: Build "Debug" and "Release" then test using clang++
+    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}-${{ matrix.os }}
+    - name: Build "Debug" then test using clang++
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
         sudo apt-get install -y clang-tidy ninja-build clang &&
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
@@ -58,7 +92,31 @@ jobs:
               -DCMAKE_CXX_COMPILER=clang++ \
               -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
         cmake --build build &&
-        cmake --build build -t test &&
+        cmake --build build -t test
+
+  build-by-clang-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          workflows:
+            - '.github/workflows/*'
+          cpp:
+            - 'cpp/**'
+
+    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ github.job }}-${{ matrix.os }}
+    - name: Build "Release" then test using clang++
+      if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
+      run: |
+        sudo apt-get install -y clang-tidy ninja-build clang &&
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
+        cd cpp &&
         rm build -rf &&
         cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
