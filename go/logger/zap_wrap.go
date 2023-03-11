@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -47,43 +48,52 @@ func newLogger(name string) *zap.SugaredLogger {
 		),
 	}
 
-	err = os.MkdirAll(xdg.CacheHome, 0755)
-	if err == nil {
-		err = addFileCore(name, &cores, &jsonConfig)
+	errs := []error{}
+	fileCore, err := getFileCore(name, &jsonConfig)
+	if err != nil {
+		errs = append(errs,
+			fmt.Errorf("Failed to init file logger: %w", err))
+	} else {
+		cores = append(cores, fileCore)
 	}
 
-	// NOTE(black_desk): Syslog is not implemented in windows and plan9.
-	// https://stackoverflow.com/questions/42083059/getting-syslog-writer-undefined
-	syslogCore := getSyslogCore(jsonConfig)
-	if syslogCore != nil {
+	syslogCore, err := getSyslogCore(jsonConfig)
+	if err != nil {
+		errs = append(errs,
+			fmt.Errorf("Failed to init syslog logger: %w", err))
+	} else {
 		cores = append(cores, syslogCore)
 	}
 
 	core := zapcore.NewTee(cores...)
 
 	log := zap.New(core, options...).Named(name).Sugar()
-	if err != nil {
-		log.Warnf("failed to create log file for logger \"%s\": %v", name, err)
+	for i := range errs {
+		log.Warn(errs[i])
 	}
 	return log
 }
 
-func addFileCore(name string, cores *[]zapcore.Core, config *zapcore.EncoderConfig) error {
+func getFileCore(name string, config *zapcore.EncoderConfig) (zapcore.Core, error) {
+	err := os.MkdirAll(xdg.CacheHome, 0755)
+	if err != nil {
+		return nil, err
+	}
+
 	logFile, err := os.OpenFile(
 		filepath.Join(xdg.CacheHome, name+".log"),
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
 		0660,
 	)
 
-	if err == nil {
-		*cores = append(*cores,
-			zapcore.NewCore(
-				zapcore.NewJSONEncoder(*config),
-				zapcore.Lock(logFile),
-				zap.WarnLevel,
-			),
-		)
+	if err != nil {
+		return nil, err
 	}
 
-	return err
+	return zapcore.NewCore(
+		zapcore.NewJSONEncoder(*config),
+		zapcore.Lock(logFile),
+		zap.WarnLevel,
+	), nil
+
 }
