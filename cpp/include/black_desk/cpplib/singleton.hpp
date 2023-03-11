@@ -57,8 +57,7 @@ class Singleton final : private std::shared_ptr<T> {
 
 #define SINGLETON_COMPONENT(...)                                              \
         BLACKDESK_CPPLIB_ARGS_OPT(BLACKDESK_CPPLIB_ARGS_ELEM(0, __VA_ARGS__), \
-                                  (),                                         \
-                                  BLACKDESK_CPPLIB_ARGS_ELEM(0, __VA_ARGS__))
+                                  (), __VA_ARGS__)
 #define SINGLETON_PARENT(...) (__VA_ARGS__)
 #define SINGLETON_PUBLIC(...) (__VA_ARGS__)
 #define SINGLETON_PRIVATE(...) (__VA_ARGS__)
