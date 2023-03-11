@@ -884,7 +884,7 @@
 #define BLACKDESK_CPPLIB_ARGS_ELEM_3(a0, a1, a2, a3, ...) a3
 #define BLACKDESK_CPPLIB_ARGS_ELEM_4(a0, a1, a2, a3, a4, ...) a4
 #define BLACKDESK_CPPLIB_ARGS_ELEM_5(a0, a1, a2, a3, a4, a5, ...) a5
-#define BLACKDESK_CPPLIB_ARGS_ELEM_6(a0, a1, a2, a3, a4, a5, a6...) a6
+#define BLACKDESK_CPPLIB_ARGS_ELEM_6(a0, a1, a2, a3, a4, a5, a6, ...) a6
 #define BLACKDESK_CPPLIB_ARGS_ELEM_7(a0, a1, a2, a3, a4, a5, a6, a7, ...) a7
 #define BLACKDESK_CPPLIB_ARGS_ELEM_8(a0, a1, a2, a3, a4, a5, a6, a7, a8, ...) a8
 
