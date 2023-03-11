@@ -3,7 +3,15 @@ name: Build and test cpp library
 on: [pull_request]
 
 jobs:
-  build-by-gcc-debug:
+  build-cpp:
+    strategy:
+      matrix:
+        compiler:
+          - g++
+          - clang++
+        build-type:
+          - Debug
+          - Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -19,112 +27,18 @@ jobs:
     - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       uses: hendrikmuhs/ccache-action@v1.2
       with:
-        key: ${{ github.job }}-${{ matrix.os }}
-    - name: Build "Debug" then test using g++
+        key: ${{ github.job }}-${{ matrix.compiler }}-${{ matrix.build-type }}
+    - name: Build "${{ matrix.compiler }}" then test using ${{ matrix.compiler }}
       if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
       run: |
-        sudo apt-get install -y clang-tidy ninja-build &&
+        sudo apt-get install -y clang clang-tidy ninja-build &&
         sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
         cd cpp &&
         rm build -rf &&
-        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
+        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} \
               -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
-              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
-        cmake --build build &&
-        cmake --build build -t test
-
-  build-by-gcc-release:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          workflows:
-            - '.github/workflows/*'
-          cpp:
-            - 'cpp/**'
-
-    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ github.job }}-${{ matrix.os }}
-    - name: Build "Release" then test using g++
-      if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      run: |
-        sudo apt-get install -y clang-tidy ninja-build &&
-        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
-        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
-        cd cpp &&
-        rm build -rf &&
-        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
-              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
-        cmake --build build &&
-        cmake --build build -t test
-
-  build-by-clang-debug:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          workflows:
-            - '.github/workflows/*'
-          cpp:
-            - 'cpp/**'
-
-    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ github.job }}-${{ matrix.os }}
-    - name: Build "Debug" then test using clang++
-      if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      run: |
-        sudo apt-get install -y clang-tidy ninja-build clang &&
-        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
-        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
-        cd cpp &&
-        rm build -rf &&
-        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
-              -DCMAKE_CXX_COMPILER=clang++ \
-              -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
-        cmake --build build &&
-        cmake --build build -t test
-
-  build-by-clang-release:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          workflows:
-            - '.github/workflows/*'
-          cpp:
-            - 'cpp/**'
-
-    - if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ github.job }}-${{ matrix.os }}
-    - name: Build "Release" then test using clang++
-      if: steps.filter.outputs.cpp == 'true' || steps.filter.outputs.workflows == 'true'
-      run: |
-        sudo apt-get install -y clang-tidy ninja-build clang &&
-        sudo apt-get install -y nlohmann-json3-dev libfmt-dev libspdlog-dev libgtest-dev libdocopt-dev &&
-        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" &&
-        cd cpp &&
-        rm build -rf &&
-        cmake -B build -DCMAKE_GENERATOR=Ninja -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_CXX_FLAGS="-Wall -Wextra -Werror -fsanitize=undefined" \
-              -DCMAKE_CXX_COMPILER=clang++ \
+              -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
               -DCMAKE_CXX_CLANG_TIDY=clang-tidy &&
         cmake --build build &&
         cmake --build build -t test
