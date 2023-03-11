@@ -39,26 +39,17 @@ func newLogger(name string) *zap.SugaredLogger {
 		panic(err)
 	}
 
-	logFile, err := os.OpenFile(
-		filepath.Join(xdg.CacheHome, name+".log"),
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0660,
-	)
-	if err != nil {
-		panic(err)
-	}
-
 	cores := []zapcore.Core{
 		zapcore.NewCore(
 			zapcore.NewConsoleEncoder(consoleConfig),
 			zapcore.Lock(os.Stderr),
 			consoleLevel,
 		),
-		zapcore.NewCore(
-			zapcore.NewJSONEncoder(jsonConfig),
-			zapcore.Lock(logFile),
-			zap.WarnLevel,
-		),
+	}
+
+	err = os.MkdirAll(xdg.CacheHome, 0755)
+	if err == nil {
+		err = addFileCore(name, &cores, &jsonConfig)
 	}
 
 	// NOTE(black_desk): Syslog is not implemented in windows and plan9.
@@ -66,10 +57,33 @@ func newLogger(name string) *zap.SugaredLogger {
 	syslogCore := getSyslogCore(jsonConfig)
 	if syslogCore != nil {
 		cores = append(cores, syslogCore)
-
 	}
 
 	core := zapcore.NewTee(cores...)
 
-	return zap.New(core, options...).Named(name).Sugar()
+	log := zap.New(core, options...).Named(name).Sugar()
+	if err != nil {
+		log.Warnf("failed to create log file for logger \"%s\": %v", name, err)
+	}
+	return log
+}
+
+func addFileCore(name string, cores *[]zapcore.Core, config *zapcore.EncoderConfig) error {
+	logFile, err := os.OpenFile(
+		filepath.Join(xdg.CacheHome, name+".log"),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0660,
+	)
+
+	if err == nil {
+		*cores = append(*cores,
+			zapcore.NewCore(
+				zapcore.NewJSONEncoder(*config),
+				zapcore.Lock(logFile),
+				zap.WarnLevel,
+			),
+		)
+	}
+
+	return err
 }
