@@ -21,6 +21,8 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: stable
+          cache: true
+          cache-dependency-path: go/go.sum
 
       - name: Build & test
         if: steps.filter.outputs.go == 'true' || steps.filter.outputs.workflows == 'true'
