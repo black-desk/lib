@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/go-logr/logr v1.2.3 // indirect
-	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
+	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38 // indirect
 	golang.org/x/net v0.8.0 // indirect
@@ -23,7 +23,7 @@ require (
 require (
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
-	github.com/onsi/ginkgo/v2 v2.9.1
+	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.4
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
