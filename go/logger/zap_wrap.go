@@ -1,23 +1,73 @@
 package logger
 
 import (
-	"fmt"
+	"log"
 	"os"
-	"path/filepath"
+	"strings"
 
-	"github.com/adrg/xdg"
+	"github.com/black-desk/zap-journal/conn"
+	"github.com/black-desk/zap-journal/encoder"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 func newLogger(name string) *zap.SugaredLogger {
 
-	var (
-		err     error
-		options []zap.Option
-	)
+	cores := []zapcore.Core{}
 
+	level := getLevel()
+
+	encoderConfig, options := getZapEncoderConfigAndOptions()
+
+	func() {
+		if !stderrIsTerminal() {
+			return
+		}
+
+		consoleCore, err := newConsoleCore(encoderConfig, level)
+		if err != nil {
+			log.Default().Printf(
+				"Failed to create console zapcore: %s",
+				err.Error(),
+			)
+		} else {
+			cores = append(cores, consoleCore)
+		}
+	}()
+
+	{
+		journalCore, err := newJournalCore(encoderConfig, level)
+		if err != nil {
+			log.Default().Printf(
+				"Failed to create journal zapcore: %s",
+				err.Error(),
+			)
+		} else {
+			cores = append(cores, journalCore)
+		}
+	}
+
+	if len(cores) == 0 {
+		cores = append(cores,
+			zapcore.NewCore(zapcore.NewJSONEncoder(
+				zap.NewDevelopmentEncoderConfig(),
+			), zapcore.Lock(os.Stderr), level),
+		)
+	}
+
+	core := zapcore.NewTee(cores...)
+
+	log := zap.New(core, options...).Named(name).Sugar()
+	return log
+}
+
+func getZapEncoderConfigAndOptions() (
+	encoderConfig zapcore.EncoderConfig,
+	options []zap.Option,
+) {
 	logMode := os.Getenv("LOG_MODE")
+	logMode = strings.ToLower(logMode)
+
 	switch logMode {
 	case "develop":
 		options = []zap.Option{
@@ -25,75 +75,59 @@ func newLogger(name string) *zap.SugaredLogger {
 			zap.AddStacktrace(zap.WarnLevel),
 		}
 	default:
-		options = []zap.Option{zap.AddStacktrace(zap.ErrorLevel)}
+		options = []zap.Option{
+			zap.AddStacktrace(zap.ErrorLevel),
+		}
 	}
 
-	consoleConfig := zap.NewDevelopmentEncoderConfig()
-	consoleConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	return
+}
 
-	jsonConfig := zap.NewProductionEncoderConfig()
-
+func getLevel() zap.AtomicLevel {
 	logLevelEnv := os.Getenv("LOG_LEVEL")
-	consoleLevel := zap.NewAtomicLevel()
-	err = consoleLevel.UnmarshalText([]byte(logLevelEnv))
+	logLevel := zap.NewAtomicLevel()
+	err := logLevel.UnmarshalText([]byte(logLevelEnv))
 	if err != nil {
 		panic(err)
 	}
-
-	cores := []zapcore.Core{
-		zapcore.NewCore(
-			zapcore.NewConsoleEncoder(consoleConfig),
-			zapcore.Lock(os.Stderr),
-			consoleLevel,
-		),
-	}
-
-	errs := []error{}
-	fileCore, err := getFileCore(name, &jsonConfig)
-	if err != nil {
-		errs = append(errs,
-			fmt.Errorf("Failed to init file logger: %w", err))
-	} else {
-		cores = append(cores, fileCore)
-	}
-
-	syslogCore, err := getSyslogCore(jsonConfig)
-	if err != nil {
-		errs = append(errs,
-			fmt.Errorf("Failed to init syslog logger: %w", err))
-	} else {
-		cores = append(cores, syslogCore)
-	}
-
-	core := zapcore.NewTee(cores...)
-
-	log := zap.New(core, options...).Named(name).Sugar()
-	for i := range errs {
-		log.Warn(errs[i])
-	}
-	return log
+	return logLevel
 }
 
-func getFileCore(name string, config *zapcore.EncoderConfig) (zapcore.Core, error) {
-	err := os.MkdirAll(xdg.CacheHome, 0755)
-	if err != nil {
-		return nil, err
-	}
+// https://rosettacode.org/wiki/Check_output_device_is_a_terminal#Go
+func stderrIsTerminal() bool {
+	fileInfo, _ := os.Stderr.Stat()
+	return (fileInfo.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+}
 
-	logFile, err := os.OpenFile(
-		filepath.Join(xdg.CacheHome, name+".log"),
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0660,
+func newConsoleCore(
+	encoderConfig zapcore.EncoderConfig, level zap.AtomicLevel,
+) (
+	core zapcore.Core, err error,
+) {
+	core = zapcore.NewCore(
+		zapcore.NewConsoleEncoder(encoderConfig),
+		zapcore.Lock(os.Stderr),
+		level,
 	)
+	return
+}
 
+func newJournalCore(
+	encoderConfig zapcore.EncoderConfig, level zap.AtomicLevel,
+) (
+	core zapcore.Core, err error,
+) {
+	enc, err := encoder.New(encoder.WithCfg(encoderConfig))
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return zapcore.NewCore(
-		zapcore.NewJSONEncoder(*config),
-		zapcore.Lock(logFile),
-		zap.WarnLevel,
-	), nil
-
+	sink, err := conn.New(conn.WithAddress("/run/systemd/journal/socket"))
+	if err != nil {
+		return
+	}
+	core = zapcore.NewCore(
+		enc, sink, level,
+	)
+	return
 }
