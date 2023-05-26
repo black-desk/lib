@@ -70,11 +70,13 @@ func getZapEncoderConfigAndOptions() (
 
 	switch logMode {
 	case "develop":
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
 		options = []zap.Option{
 			zap.Development(),
 			zap.AddStacktrace(zap.WarnLevel),
 		}
 	default:
+		encoderConfig = zap.NewProductionEncoderConfig()
 		options = []zap.Option{
 			zap.AddStacktrace(zap.ErrorLevel),
 		}
