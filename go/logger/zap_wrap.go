@@ -119,6 +119,8 @@ func newJournalCore(
 ) (
 	core zapcore.Core, err error,
 ) {
+	encoderConfig.StacktraceKey = "STACKTRACE"
+
 	enc, err := encoder.New(encoder.WithCfg(encoderConfig))
 	if err != nil {
 		return
