@@ -34,7 +34,7 @@ func formatAnnotate(annotate []any) string {
 }
 
 func Wrap(err *error, annotate ...any) {
-	if err == nil {
+	if err == nil || *err == nil {
 		return
 	}
 
@@ -48,7 +48,7 @@ func Wrap(err *error, annotate ...any) {
 	*err = fmt.Errorf(
 		"%s:%d (%x)\n\t"+msg+"\n%w",
 		file, line, pc,
-                *err,
-        )
+		*err,
+	)
 	return
 }
