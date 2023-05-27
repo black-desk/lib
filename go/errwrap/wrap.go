@@ -30,7 +30,7 @@ func formatAnnotate(annotate []any) string {
 		panic("annotate should start with string")
 	}
 
-	return fmt.Sprintf(" [ "+msg+" ]", annotate[1:]...)
+	return fmt.Sprintf("\t"+msg+"\n", annotate[1:]...)
 }
 
 func Wrap(err *error, annotate ...any) {
@@ -46,7 +46,7 @@ func Wrap(err *error, annotate ...any) {
 	msg := formatAnnotate(annotate)
 
 	*err = fmt.Errorf(
-		"%s:%d (%x)\n\t"+msg+"\n%w",
+		"%s:%d (%x)\n"+msg+"%w",
 		file, line, pc,
 		*err,
 	)
