@@ -32,3 +32,23 @@ func formatAnnotate(annotate []any) string {
 
 	return fmt.Sprintf(" [ "+msg+" ]", annotate[1:]...)
 }
+
+func Wrap(err *error, annotate ...any) {
+	if err == nil {
+		return
+	}
+
+	pc, file, line, ok := runtime.Caller(1)
+	if !ok {
+		panic("failed to get caller")
+	}
+
+	msg := formatAnnotate(annotate)
+
+	*err = fmt.Errorf(
+		"%s:%d (%x)\n\t"+msg+"\n%w",
+		file, line, pc,
+                *err,
+        )
+	return
+}
