@@ -25,9 +25,11 @@ func (e *MyError) Is(target error) bool {
 	return true
 }
 
-func TestTrace(t *testing.T) {
+func TestWrap(t *testing.T) {
 	Convey("Create a traced error", t, func() {
-		err := Trace(&MyError{})
+		var err error
+		err = &MyError{}
+		Wrap(&err)
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -55,13 +57,12 @@ func TestTrace(t *testing.T) {
 	})
 }
 
-func TestTraceNested(t *testing.T) {
+func TestWrapNested(t *testing.T) {
 	Convey("Create a nest-traced error", t, func() {
-		err := Trace( // -5
-			Trace( // -4
-				&MyError{}, // -3
-			), // -2
-		) // -1
+		var err error
+		err = &MyError{}
+		Wrap(&err) // -2
+		Wrap(&err) // -1
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -79,12 +80,12 @@ func TestTraceNested(t *testing.T) {
 			So(
 				errStr,
 				ShouldContainSubstring,
-				fmt.Sprintf("%d", line-4),
+				fmt.Sprintf("%d", line-1),
 			)
 			So(
 				errStr,
 				ShouldContainSubstring,
-				fmt.Sprintf("%d", line-5),
+				fmt.Sprintf("%d", line-2),
 			)
 		})
 	})
@@ -93,7 +94,9 @@ func TestTraceNested(t *testing.T) {
 func TestAnnotate(t *testing.T) {
 	Convey("Create an annotated error", t, func() {
 		annotation := "some annotation"
-		err := Trace(&MyError{}, annotation)
+		var err error
+		err = &MyError{}
+		Wrap(&err, annotation)
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -129,7 +132,9 @@ func TestAnnotate(t *testing.T) {
 	})
 
 	Convey("Create an annotated error with fmt.Sprintf", t, func() {
-		err := Trace(&MyError{}, "some annotation %v", "arg")
+		var err error
+		err = &MyError{}
+		Wrap(&err, "some annotation %v", "arg")
 		errStr := err.Error()
 		Convey("The error should contain fmt arg", func() {
 			So(errStr, ShouldContainSubstring, "arg")
@@ -141,12 +146,10 @@ func TestAnnotateNested(t *testing.T) {
 	Convey("Create a nest-annotated error", t, func() {
 		annotation1 := "some annotation 1"
 		annotation2 := "some annotation 2"
-		err := Trace( // -6
-			Trace( // -5
-				&MyError{},   // -4
-				annotation1), //-3
-			annotation2, // -2
-		) // -1
+		var err error
+    err = &MyError{}
+		Wrap(&err, annotation1)
+		Wrap(&err, annotation2)
 		_, _, line, _ := runtime.Caller(0)
 
 		errStr := err.Error()
@@ -173,12 +176,12 @@ func TestAnnotateNested(t *testing.T) {
 			So(
 				errStr,
 				ShouldContainSubstring,
-				fmt.Sprintf("%d", line-5),
+				fmt.Sprintf("%d", line-1),
 			)
 			So(
 				errStr,
 				ShouldContainSubstring,
-				fmt.Sprintf("%d", line-6),
+				fmt.Sprintf("%d", line-2),
 			)
 		})
 
@@ -204,14 +207,16 @@ func TestAnnotateNested(t *testing.T) {
 
 func TestWrapNil(t *testing.T) {
 	Convey("Try to trace nil", t, func() {
-		err := Trace(nil)
+		var err error
+		Wrap(&err)
 		Convey("Should get nil", func() {
 			So(err, ShouldBeNil)
 		})
 	})
 
 	Convey("Try to annotate nil", t, func() {
-		err := Trace(nil, "some annotation")
+		var err error
+		Wrap(&err, "some annotation")
 		Convey("Should get nil", func() {
 			So(err, ShouldBeNil)
 		})
