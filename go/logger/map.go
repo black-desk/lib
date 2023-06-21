@@ -7,7 +7,7 @@ import (
 )
 
 var loggerMapMutex sync.Mutex
-var loggerMap = map[string]any{}
+var loggerMap = map[string]*zap.SugaredLogger{}
 
 func Get(name string) *zap.SugaredLogger {
 	loggerMapMutex.Lock()
@@ -15,9 +15,11 @@ func Get(name string) *zap.SugaredLogger {
 
 	oldLog, ok := loggerMap[name]
 	if ok {
-		return oldLog.(*zap.SugaredLogger)
+		return oldLog
 	}
 
 	newLog := newLogger(name)
+	loggerMap[name] = newLog
+
 	return newLog
 }
