@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/smartystreets/goconvey v1.8.0
 	go.uber.org/zap v1.24.0
 )
 
@@ -13,7 +12,6 @@ require (
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38 // indirect
-	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
@@ -24,11 +22,9 @@ require (
 
 require (
 	github.com/black-desk/zap-journal v0.0.0-20230526030022-1d5611044e29
-	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/smartystreets/assertions v1.13.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect
