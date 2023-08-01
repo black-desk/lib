@@ -23,7 +23,7 @@ require (
 require (
 	github.com/black-desk/zap-journal v0.0.0-20230526030022-1d5611044e29
 	github.com/onsi/ginkgo/v2 v2.11.0
-	github.com/onsi/gomega v1.27.9
+	github.com/onsi/gomega v1.27.10
 	github.com/pkg/errors v0.9.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
