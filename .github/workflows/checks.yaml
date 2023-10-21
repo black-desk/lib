@@ -6,4 +6,4 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: black-desk/checks@v1
+      - uses: black-desk/checks@master
