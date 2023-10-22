@@ -22,4 +22,14 @@ var _ = Describe("ginkgo helper", func() {
 		ContextTableEntry([]int{1, 2}),
 		ContextTableEntry([]int{2, 3}).WithFmt("2 3"),
 	)
+
+	ContextTable("Given array %v",
+		ContextTableEntry([]int{1, 2}),
+		ContextTableEntry([]int{2, 3}).WithFmt("2 3"),
+		func(arg []int) {
+			It("array[2]-array[1] should be a equal to 1", func() {
+				Expect(arg[1] - arg[0]).To(Equal(1))
+			})
+		},
+	)
 })
