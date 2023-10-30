@@ -3,7 +3,7 @@ module github.com/black-desk/lib/go
 go 1.19
 
 require (
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	go.uber.org/zap v1.26.0
 )
 
